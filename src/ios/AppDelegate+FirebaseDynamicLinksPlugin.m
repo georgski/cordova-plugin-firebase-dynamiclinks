@@ -5,6 +5,8 @@
 
 @implementation AppDelegate (FirebaseDynamicLinksPlugin)
 
+static NSString *const CUSTOM_URL_PREFIX_TO_IGNORE = @"/__/auth/callback";
+
 // Borrowed from http://nshipster.com/method-swizzling/
 + (void)load {
     static dispatch_once_t onceToken;
@@ -83,21 +85,25 @@
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
-    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     
     FirebaseDynamicLinksPlugin* dl = [self.viewController getCommandInstance:@"FirebaseDynamicLinks"];
     if (dynamicLink) {
-        if (dynamicLink.url) {
+        BOOL validDynamicLink = dynamicLink.url && ![dynamicLink.url.path hasPrefix:CUSTOM_URL_PREFIX_TO_IGNORE];
+        if (validDynamicLink) {
             [dl postDynamicLink:dynamicLink];
+            return YES;
         } else {
             // Dynamic link has empty deep link. This situation will happens if
             // Firebase Dynamic Links iOS SDK tried to retrieve pending dynamic link,
             // but pending link is not available for this device/App combination.
             // At this point you may display default onboarding view.
         }
-        return YES;
     }
-    return NO;
+    return [super application: application
+                      openURL:url
+            sourceApplication:sourceApplication
+                   annotation:annotation];
 }
 
 // [END continueuseractivity]
