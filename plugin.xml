@@ -15,7 +15,10 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     </engines>
 
     <js-module name="FirebaseDynamicLinks" src="www/FirebaseDynamicLinks.js">
-        <merges target="cordova.plugins.firebase.dynamiclinks" />
+        <merges target="cordova.plugins.firebaseOffline.dynamiclinks" />
+    </js-module>
+    <js-module name="FirebaseDatabase" src="www/FirebaseDatabase.js">
+        <merges target="cordova.plugins.firebaseOffline.database" />
     </js-module>
 
     <preference name="APP_DOMAIN" />
@@ -61,6 +64,10 @@ xmlns:android="http://schemas.android.com/apk/res/android"
                 <param name="ios-package" value="FirebaseDynamicLinksPlugin" />
                 <param name="onload" value="true" />
             </feature>
+            <feature name="FirebaseDatabase">
+                <param name="ios-package" value="FirebaseDatabasePlugin" />
+                <param name="onload" value="true" />
+            </feature>
         </config-file>
 
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
@@ -96,6 +103,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <source-file src="src/ios/AppDelegate+FirebaseDynamicLinksPlugin.m" />
         <header-file src="src/ios/FirebaseDynamicLinksPlugin.h" />
         <source-file src="src/ios/FirebaseDynamicLinksPlugin.m" />
+        <header-file src="src/ios/FirebaseDatabasePlugin.h" />
+        <source-file src="src/ios/FirebaseDatabasePlugin.m" />
 
         <header-file src="src/ios/Firebase/Firebase.h" />
         
@@ -107,6 +116,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		<framework custom="true" src="src/ios/Firebase/Analytics/GoogleToolboxForMac.framework" />
 		<framework custom="true" src="src/ios/Firebase/Analytics/nanopb.framework" />
         <framework custom="true" src="src/ios/Firebase/DynamicLinks/FirebaseDynamicLinks.framework" />
+		<framework custom="true" src="src/ios/Firebase/Database/FirebaseDatabase.framework" />
+		<framework custom="true" src="src/ios/Firebase/Database/leveldb-library.framework" />
     </platform>
 
 </plugin>

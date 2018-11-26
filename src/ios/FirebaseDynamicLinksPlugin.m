@@ -11,7 +11,9 @@ static NSString *const CUSTOM_URL_SCHEME = @"dlscheme";
 - (void)finishLaunching:(NSNotification *)notification
 {
     [FIROptions defaultOptions].deepLinkURLScheme = CUSTOM_URL_SCHEME;
-    [FIRApp configure];
+    if(![FIRApp defaultApp]) {
+        [FIRApp configure];
+    }
 }
 
 
