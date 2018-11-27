@@ -1,6 +1,6 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
-           id="cordova-plugin-firebase-dynamiclinks2"
+           id="cordova-plugin-firebase-dynamiclinks-fix"
       version="1.0.0">
 
     <name>FirebaseDynamicLinksPlugin</name>
@@ -15,18 +15,24 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     </engines>
 
     <js-module name="FirebaseDynamicLinks" src="www/FirebaseDynamicLinks.js">
-        <merges target="cordova.plugins.firebase.dynamiclinks" />
+        <merges target="cordova.plugins.firebaseOffline.dynamiclinks" />
+    </js-module>
+    <js-module name="FirebaseDatabase" src="www/FirebaseDatabase.js">
+        <merges target="cordova.plugins.firebaseOffline.database" />
     </js-module>
 
     <preference name="APP_DOMAIN" />
     <preference name="PAGE_LINK_DOMAIN" />
 
     <platform name="android">
-        <preference name="FIREBASE_DYNAMIC_LINKS_VERSION" default="16.0.+"/>
+        <preference name="FIREBASE_VERSION" default="16.+"/>
 
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="FirebaseDynamicLinks">
                 <param name="android-package" value="by.chemerisuk.cordova.firebase.FirebaseDynamicLinksPlugin" />
+            </feature>
+            <feature name="FirebaseDatabase">
+                <param name="android-package" value="by.chemerisuk.cordova.firebase.FirebaseDatabasePlugin" />
             </feature>
         </config-file>
 
@@ -48,17 +54,26 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         </config-file>
 
         <source-file src="src/android/FirebaseDynamicLinksPlugin.java" target-dir="src/by/chemerisuk/cordova/firebase" />
+        <source-file src="src/android/FirebaseDatabasePlugin.java" target-dir="src/by/chemerisuk/cordova/firebase" />
 
         <dependency id="cordova-support-android-plugin" version="~1.0.0"/>
         <dependency id="cordova-support-google-services" version="~1.2.0"/>
 
-        <framework src="com.google.firebase:firebase-dynamic-links:$FIREBASE_DYNAMIC_LINKS_VERSION" />
+        <framework src="com.google.firebase:firebase-core:$FIREBASE_VERSION" />
+        <framework src="com.google.firebase:firebase-dynamic-links:$FIREBASE_VERSION" />
+        <framework src="com.google.firebase:firebase-database:$FIREBASE_VERSION" />
+
+        <framework src="com.google.code.gson:gson:2+"/>
     </platform>
 
     <platform name="ios">
         <config-file parent="/*" target="config.xml">
             <feature name="FirebaseDynamicLinks">
                 <param name="ios-package" value="FirebaseDynamicLinksPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="FirebaseDatabase">
+                <param name="ios-package" value="FirebaseDatabasePlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -96,6 +111,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <source-file src="src/ios/AppDelegate+FirebaseDynamicLinksPlugin.m" />
         <header-file src="src/ios/FirebaseDynamicLinksPlugin.h" />
         <source-file src="src/ios/FirebaseDynamicLinksPlugin.m" />
+        <header-file src="src/ios/FirebaseDatabasePlugin.h" />
+        <source-file src="src/ios/FirebaseDatabasePlugin.m" />
 
         <header-file src="src/ios/Firebase/Firebase.h" />
         
@@ -107,6 +124,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		<framework custom="true" src="src/ios/Firebase/Analytics/GoogleToolboxForMac.framework" />
 		<framework custom="true" src="src/ios/Firebase/Analytics/nanopb.framework" />
         <framework custom="true" src="src/ios/Firebase/DynamicLinks/FirebaseDynamicLinks.framework" />
+		<framework custom="true" src="src/ios/Firebase/Database/FirebaseDatabase.framework" />
+		<framework custom="true" src="src/ios/Firebase/Database/leveldb-library.framework" />
     </platform>
 
 </plugin>
