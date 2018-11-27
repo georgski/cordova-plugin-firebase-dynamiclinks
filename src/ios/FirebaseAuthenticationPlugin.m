@@ -1,5 +1,4 @@
 #import "FirebaseAuthenticationPlugin.h"
-@import Firebase;
 
 @implementation FirebaseAuthenticationPlugin
 

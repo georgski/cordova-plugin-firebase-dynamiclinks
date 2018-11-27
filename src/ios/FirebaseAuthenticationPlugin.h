@@ -1,4 +1,6 @@
 #import <Cordova/CDV.h>
+#import "Firebase.h"
+@import FirebaseAuth;
 
 @interface FirebaseAuthenticationPlugin : CDVPlugin
 
