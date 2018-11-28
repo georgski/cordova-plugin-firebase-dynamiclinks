@@ -17,5 +17,8 @@
 - (void)verifyPhoneNumber:(CDVInvokedUrlCommand*)command;
 - (void)signOut:(CDVInvokedUrlCommand*)command;
 - (void)setLanguageCode:(CDVInvokedUrlCommand*)command;
+- (void)setAuthStateChanged:(CDVInvokedUrlCommand*)command;
+
+@property(strong, nonatomic) FIRAuthStateDidChangeListenerHandle handle;
 
 @end
