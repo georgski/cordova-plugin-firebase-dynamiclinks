@@ -207,6 +207,21 @@
     return pluginResult;
 }
 
+- (void)setAuthStateChanged:(CDVInvokedUrlCommand*)command {
+    self.handle = [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CDVPluginResult *pluginResult;
+            if (user) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:user]];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
+            [pluginResult setKeepCallbackAsBool:YES];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        });
+    }];
+}
+
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
     return @{
         @"uid": user.uid,
