@@ -223,14 +223,15 @@
 }
 
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
+    NSArray<id<FIRUserInfo>> *providerData = user.providerData;
     return @{
         @"uid": user.uid,
         @"providerId": user.providerID,
         @"displayName": user.displayName ? user.displayName : @"",
         @"email": user.email ? user.email : @"",
         @"phoneNumber": user.phoneNumber ? user.phoneNumber : @"",
-        @"photoURL": user.photoURL ? user.photoURL.absoluteString : @""
-    };
+        @"photoURL": user.photoURL ? user.photoURL.absoluteString : @"",
+        @"providerData": (providerData == nil || [providerData count] == 0) ? @[] : @[providerData[0].providerID]
 }
 
 @end
