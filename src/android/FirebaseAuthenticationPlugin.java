@@ -259,6 +259,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             result.put("phoneNumber", user.getPhoneNumber());
             result.put("photoURL", user.getPhotoUrl());
             result.put("providerId", user.getProviderId());
+            result.put("providerData", new JSONArray(user.getProviders()));
         } catch (JSONException e) {
             Log.e(TAG, "Fail to process getProfileData", e);
         }
