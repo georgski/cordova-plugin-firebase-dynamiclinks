@@ -80,5 +80,20 @@ module.exports = {
         return function() {
             exec(null, null, PLUGIN_NAME, "setAuthStateChanged", [true]);
         };
+    },
+    changePassword: function(oldPassword, newPassword) {
+        return new Promise(function(resolve, reject) {
+            exec(resolve, reject, PLUGIN_NAME, "changePassword", [oldPassword, newPassword]);
+        });
+    },
+    updateEmail: function(email) {
+        return new Promise(function(resolve, reject) {
+            exec(resolve, reject, PLUGIN_NAME, "updateEmail", [email]);
+        });
+    },
+    updateProfile: function(displayName, photoURL) {
+        return new Promise(function(resolve, reject) {
+            exec(resolve, reject, PLUGIN_NAME, "updateProfile", [displayName, photoURL]);
+        });
     }
 };

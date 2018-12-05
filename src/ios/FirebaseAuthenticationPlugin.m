@@ -222,6 +222,65 @@
     }];
 }
 
+- (void)changePassword:(CDVInvokedUrlCommand *)command {
+    NSString* newPassword = [command.arguments objectAtIndex:1];
+    FIRUser *user = [FIRAuth auth].currentUser;
+    [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
+        CDVPluginResult *pluginResult;
+        if (error) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)updateEmail:(CDVInvokedUrlCommand *)command {
+    NSString* email = [command.arguments objectAtIndex:0];
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    [user updateEmail:email completion:^(NSError *_Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CDVPluginResult *pluginResult;
+            if (error) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        });
+    }];
+}
+
+- (void)updateProfile:(CDVInvokedUrlCommand *)command {
+    NSString* displayName = [command.arguments objectAtIndex:0];
+    NSString* photoURL = [command.arguments objectAtIndex:1];
+    
+    FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
+    if(displayName) {
+        changeRequest.displayName = displayName;
+    }
+    if(photoURL) {
+        NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+        NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+        
+        NSString *url = [NSString stringWithFormat:@"%@", photoURL];
+        NSString *encodedUrl = [url stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+        changeRequest.photoURL = [NSURL URLWithString: encodedUrl];
+    }
+    
+    [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
+        CDVPluginResult *pluginResult;
+        if (error) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
     NSArray<id<FIRUserInfo>> *providerData = user.providerData;
     return @{
