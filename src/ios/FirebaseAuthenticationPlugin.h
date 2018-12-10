@@ -21,6 +21,7 @@
 - (void)changePassword:(CDVInvokedUrlCommand*)command;
 - (void)updateEmail:(CDVInvokedUrlCommand*)command;
 - (void)updateProfile:(CDVInvokedUrlCommand*)command;
+- (void)deleteCurrentAnonymousUser:(CDVInvokedUrlCommand*)command;
 
 @property(strong, nonatomic) FIRAuthStateDidChangeListenerHandle handle;
 

@@ -2,6 +2,8 @@
 
 @implementation FirebaseAuthenticationPlugin
 
+static FIRUser* anonymousUser;
+
 - (void)pluginInitialize {
     NSLog(@"Starting Firebase Authentication plugin");
 
@@ -92,8 +94,21 @@
 
 - (void)signInAnonymously:(CDVInvokedUrlCommand *)command {
     [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *result, NSError *error) {
+        anonymousUser = result.user;
         [self.commandDelegate sendPluginResult:[self createAuthResult:result
                                                             withError:error] callbackId:command.callbackId];
+    }];
+}
+
+- (void)deleteCurrentAnonymousUser:(CDVInvokedUrlCommand *)command {
+    [anonymousUser deleteWithCompletion:^(NSError *_Nullable error) {
+        CDVPluginResult *pluginResult;
+        if (error) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
 
@@ -271,13 +286,15 @@
     }
     
     [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
-        CDVPluginResult *pluginResult;
-        if (error) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
-        } else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        }
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+            CDVPluginResult *pluginResult;
+            if (error) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//        });
     }];
 }
 
