@@ -290,7 +290,8 @@
         @"email": user.email ? user.email : @"",
         @"phoneNumber": user.phoneNumber ? user.phoneNumber : @"",
         @"photoURL": user.photoURL ? user.photoURL.absoluteString : @"",
-        @"providerData": (providerData == nil || [providerData count] == 0) ? @[] : @[providerData[0].providerID]
+        @"providerData": (providerData == nil || [providerData count] == 0) ? @[] : @[providerData[0].providerID],
+        @"isAnonymous": user.isAnonymous ? @YES : @NO
     };
 }
 
