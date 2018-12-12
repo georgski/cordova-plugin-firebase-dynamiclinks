@@ -301,8 +301,12 @@ static FIRUser* anonymousUser;
 - (void)currentUser:(CDVInvokedUrlCommand *)command {
     FIRUser *user = [FIRAuth auth].currentUser;
     CDVPluginResult *pluginResult;
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:user]];
+    if (user) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:user]];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
