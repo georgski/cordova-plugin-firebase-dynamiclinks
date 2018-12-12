@@ -298,6 +298,13 @@ static FIRUser* anonymousUser;
     }];
 }
 
+- (void)currentUser:(CDVInvokedUrlCommand *)command:(CDVInvokedUrlCommand *)command {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:user]];
+}
+
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
     NSArray<id<FIRUserInfo>> *providerData = user.providerData;
     return @{
