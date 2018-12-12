@@ -298,7 +298,7 @@ static FIRUser* anonymousUser;
     }];
 }
 
-- (void)currentUser:(CDVInvokedUrlCommand *)command:(CDVInvokedUrlCommand *)command {
+- (void)currentUser:(CDVInvokedUrlCommand *)command {
     FIRUser *user = [FIRAuth auth].currentUser;
     CDVPluginResult *pluginResult;
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
