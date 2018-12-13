@@ -7,6 +7,9 @@ function DbSnapshot(ref, data) {
     this.ref = ref;
     this.key = data.key;
     this._data = data;
+    this.asCollection = data && data.value && (typeof data.value === "object") 
+        ? Object.keys(data.value).map(function(key) { return {[key]: data.value[key]}; })
+        : [];
 }
 
 DbSnapshot.prototype = {
@@ -15,6 +18,9 @@ DbSnapshot.prototype = {
     },
     getPriority: function() {
         return this._data.priority;
+    },
+    forEach: function(callback) {
+        return this.asCollection.forEach(callback)
     }
 };
 
@@ -123,7 +129,7 @@ DbRef.prototype.push = function(value) {
     return new Promise(function(resolve, reject) {
         exec(resolve, reject, PLUGIN_NAME, "push", args);
     }).then(function(path) {
-        return new DbRef(path, db);
+        return new DbRef(path);
     });
 };
 
