@@ -95,7 +95,10 @@
                         @"message": error.description
                 }];
             } else {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[NSString stringWithFormat:@"%@/%@", path, [ref key]]];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                    @"key": [ref key],
+                    @"path": [NSString stringWithFormat:@"%@/%@", path, [ref key]]
+                }];
             }
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         });

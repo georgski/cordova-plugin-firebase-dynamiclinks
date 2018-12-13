@@ -96,10 +96,11 @@ DbQuery.prototype = {
     }
 };
 
-function DbRef(path, url) {
+function DbRef(path, url, key) {
     this.ref = this;
     this._path = path || "/";
     this._url = url || "";
+    this.key = key || "";
 }
 
 DbRef.prototype = new DbQuery();
@@ -129,7 +130,7 @@ DbRef.prototype.push = function(value) {
     return new Promise(function(resolve, reject) {
         exec(resolve, reject, PLUGIN_NAME, "push", args);
     }).then(function(path) {
-        return new DbRef(path);
+        return new DbRef(path.path, '', path.key);
     });
 };
 
