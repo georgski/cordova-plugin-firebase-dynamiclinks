@@ -8,7 +8,12 @@ function DbSnapshot(ref, data) {
     this.key = data.key;
     this._data = data;
     this.asCollection = data && data.value && (typeof data.value === "object") 
-        ? Object.keys(data.value).map(function(key) { return {[key]: data.value[key]}; })
+        ? Object.keys(data.value).map(function(key) { 
+            return {
+                [key]: data.value[key],
+                val: function() { return data.value[key] }
+            }
+        })
         : [];
 }
 
