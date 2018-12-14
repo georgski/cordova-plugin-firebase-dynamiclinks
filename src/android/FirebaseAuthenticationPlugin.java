@@ -37,6 +37,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     private PhoneAuthProvider phoneAuthProvider;
     private CallbackContext signinCallback;
     private CallbackContext authStateCallback;
+    private FirebaseUser anonymousUser;
 
     @Override
     protected void pluginInitialize() {
@@ -114,9 +115,15 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     @CordovaMethod
     private void signInAnonymously(CallbackContext callbackContext) {
         this.signinCallback = callbackContext;
-
+        OnCompleteListener plugin = this;
         firebaseAuth.signInAnonymously()
-            .addOnCompleteListener(cordova.getActivity(), this);
+            .addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(Task<AuthResult> task) {
+                    anonymousUser = task.getResult().getUser();
+                    plugin.onComplete(task);
+                }
+            });
     }
 
     @CordovaMethod
@@ -260,10 +267,61 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             result.put("photoURL", user.getPhotoUrl());
             result.put("providerId", user.getProviderId());
             result.put("providerData", new JSONArray(user.getProviders()));
+            result.put("isAnonymous", user.isAnonymous());
         } catch (JSONException e) {
             Log.e(TAG, "Fail to process getProfileData", e);
         }
 
         return result;
+    }
+
+    @CordovaMethod
+    private void updateEmail(String email, CallbackContext callbackContext) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        user.updateEmail(email).addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                if (task.isSuccessful()) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.error(task.getException().getMessage());
+                }
+            }
+        });
+    }
+
+    @CordovaMethod
+    private void changePassword(String email, CallbackContext callbackContext) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        user.updatePassword(email).addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                if (task.isSuccessful()) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.error(task.getException().getMessage());
+                }
+            }
+        });
+    }
+
+    @CordovaMethod
+    private void currentUser(String email, CallbackContext callbackContext) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        callbackContext.success(getProfileData(user));
+    }
+
+    @CordovaMethod
+    private void deleteCurrentAnonymousUser(CallbackContext callbackContext) {
+        this.anonymousUser.delete().addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(Task<Void> task) {
+                if (task.isSuccessful()) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.error(task.getException().getMessage());
+                }
+            }
+        });
     }
 }
