@@ -125,10 +125,16 @@
     BOOL keepCallback = [uid length] > 0 ? YES : NO;
     id handler = ^(FIRDataSnapshot *_Nonnull snapshot) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableArray *children = [NSMutableArray array];
+            for (FIRDataSnapshot *child in snapshot.children) {
+                NSDictionary *childObj = @{ @"key" : child.key, @"value" : child.value};
+                [children addObject:childObj];
+            }
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
                 @"key": snapshot.key,
                 @"value": snapshot.value,
-                @"priority": snapshot.priority
+                @"priority": snapshot.priority,
+                @"children": children
             }];
             [pluginResult setKeepCallbackAsBool:keepCallback];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

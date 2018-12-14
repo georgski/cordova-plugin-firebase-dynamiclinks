@@ -7,11 +7,11 @@ function DbSnapshot(ref, data) {
     this.ref = ref;
     this.key = data.key;
     this._data = data;
-    this.asCollection = data && data.value && (typeof data.value === "object") 
-        ? Object.keys(data.value).map(function(key) { 
+    this.asCollection = data && data.children && (typeof data.children === "object") 
+        ? data.children.map(function(child) { 
             return {
-                [key]: data.value[key],
-                val: function() { return data.value[key] }
+                key: child.key,
+                val: function() { return data.value[child.key] }
             }
         })
         : [];
