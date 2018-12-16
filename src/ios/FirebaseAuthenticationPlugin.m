@@ -238,7 +238,7 @@ static FIRUser* anonymousUser;
 }
 
 - (void)changePassword:(CDVInvokedUrlCommand *)command {
-    NSString* newPassword = [command.arguments objectAtIndex:1];
+    NSString* newPassword = [command.arguments objectAtIndex:0];
     FIRUser *user = [FIRAuth auth].currentUser;
     [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
         CDVPluginResult *pluginResult;
@@ -307,6 +307,23 @@ static FIRUser* anonymousUser;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)reauthenticateWithCredential:(CDVInvokedUrlCommand *)command {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    NSString* email = [command.arguments objectAtIndex:0];
+    NSString* password = [command.arguments objectAtIndex:1];
+    
+    FIRAuthCredential *credential = [FIREmailAuthProvider credentialWithEmail: email password: password];
+    [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
+        CDVPluginResult *pluginResult;
+        if (error) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 - (NSDictionary*)userToDictionary:(FIRUser *)user {
