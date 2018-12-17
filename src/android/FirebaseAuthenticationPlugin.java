@@ -13,6 +13,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -248,7 +249,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             if (user != null) {
                 pluginResult = new PluginResult(PluginResult.Status.OK, getProfileData(user));
             } else {
-                pluginResult = new PluginResult(PluginResult.Status.OK, "");
+                pluginResult = new PluginResult(PluginResult.Status.OK);
             }
 
             pluginResult.setKeepCallback(true);
@@ -332,7 +333,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
         user.reauthenticate(credential)
             .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
+                public void onComplete(Task<Void> task) {
                     if (task.isSuccessful()) {
                         callbackContext.success();
                     } else {
