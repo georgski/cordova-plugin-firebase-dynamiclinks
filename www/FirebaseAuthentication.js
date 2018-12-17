@@ -29,7 +29,7 @@ module.exports = {
             exec(resolve, reject, PLUGIN_NAME, "signInWithEmailAndPassword", [email, password]);
         });
     },
-    signInAnonymously: function(email, password) {
+    signInAnonymously: function() {
         return new Promise(function(resolve, reject) {
             exec(resolve, reject, PLUGIN_NAME, "signInAnonymously", []);
         });
@@ -81,9 +81,9 @@ module.exports = {
             exec(null, null, PLUGIN_NAME, "setAuthStateChanged", [true]);
         };
     },
-    changePassword: function(oldPassword, newPassword) {
+    changePassword: function(newPassword) {
         return new Promise(function(resolve, reject) {
-            exec(resolve, reject, PLUGIN_NAME, "changePassword", [oldPassword, newPassword]);
+            exec(resolve, reject, PLUGIN_NAME, "changePassword", [newPassword]);
         });
     },
     updateEmail: function(email) {
@@ -104,6 +104,11 @@ module.exports = {
     currentUser: function() {
         return new Promise(function(resolve, reject) {
             exec(resolve, reject, PLUGIN_NAME, "currentUser", [null]);
+        });
+    },
+    reauthenticateWithCredential: function(email, password) {
+        return new Promise(function(resolve, reject) {
+            exec(resolve, reject, PLUGIN_NAME, "reauthenticateWithCredential", [email, password]);
         });
     }
 };
