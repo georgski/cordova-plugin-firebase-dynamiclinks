@@ -1,6 +1,7 @@
 package by.chemerisuk.cordova.firebase;
 
 import android.util.Log;
+import android.net.Uri;
 
 import by.chemerisuk.cordova.support.CordovaMethod;
 import by.chemerisuk.cordova.support.ReflectiveCordovaPlugin;
@@ -9,16 +10,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.FirebaseException;
 
 import org.apache.cordova.CallbackContext;
@@ -307,14 +309,42 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     }
 
     @CordovaMethod
+    private void updateProfile(String displayName, String photoURL, CallbackContext callbackContext) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        UserProfileChangeRequest.Builder profileUpdates = new UserProfileChangeRequest.Builder();
+        if (displayName != null) {
+            profileUpdates.setDisplayName(displayName);
+        }
+        if (photoURL != null) {
+            Uri photoUri = Uri.parse(photoURL);
+            profileUpdates.setPhotoUri(photoUri);
+        }
+        user.updateProfile(profileUpdates.build())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            callbackContext.success();
+                        } else {
+                            callbackContext.error(task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    @CordovaMethod
     private void currentUser(CallbackContext callbackContext) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        callbackContext.success(getProfileData(user));
+        if (user != null) {
+            callbackContext.success(getProfileData(user));
+        } else {
+            callbackContext.success();
+        }
     }
 
     @CordovaMethod
     private void deleteCurrentAnonymousUser(CallbackContext callbackContext) {
-        this.anonymousUser.delete().addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
+        anonymousUser.delete().addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
             @Override
             public void onComplete(Task<Void> task) {
                 if (task.isSuccessful()) {
