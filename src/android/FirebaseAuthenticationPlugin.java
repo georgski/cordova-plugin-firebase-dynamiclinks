@@ -291,9 +291,9 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     }
 
     @CordovaMethod
-    private void changePassword(String email, CallbackContext callbackContext) {
+    private void changePassword(String password, CallbackContext callbackContext) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        user.updatePassword(email).addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
+        user.updatePassword(password).addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
             @Override
             public void onComplete(Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -306,7 +306,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     }
 
     @CordovaMethod
-    private void currentUser(String email, CallbackContext callbackContext) {
+    private void currentUser(CallbackContext callbackContext) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         callbackContext.success(getProfileData(user));
     }
@@ -323,5 +323,22 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 }
             }
         });
+    }
+
+    @CordovaMethod
+    private void reauthenticateWithCredential(String email, String password, CallbackContext callbackContext) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+        user.reauthenticate(credential)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        callbackContext.success();
+                    } else {
+                        callbackContext.error(task.getException().getMessage());
+                    }
+                }
+            });
     }
 }
