@@ -193,12 +193,22 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
         });
     }
 
+    private JSONObject getRefJsonObject(String path, String key) {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("key", key);
+            data.put("path", path + "/" + key);
+        } catch (JSONException e) {}
+        return data;
+    }
+
     @CordovaMethod(ExecutionThread.WORKER)
     private void push(String url, String path, JSONObject value, CallbackContext callbackContext) throws JSONException {
         DatabaseReference ref = getDb(url).getReference(path).push();
+        String key = ref.getKey();
 
         if (value == null) {
-            callbackContext.success(ref.getKey());
+            callbackContext.success(getRefJsonObject(path, key));
         } else {
             ref.setValue(toSettable(value), new DatabaseReference.CompletionListener() {
                 @Override
@@ -206,7 +216,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                     if (error != null) {
                         callbackContext.error(error.getCode());
                     } else {
-                        callbackContext.success(ref.getKey());
+                        callbackContext.success(getRefJsonObject(path, key));
                     }
                 }
             });
@@ -309,6 +319,15 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                 value = new JSONArray(this.gson.toJson(value));
             }
             data.put("value", value);
+            JSONArray jsonArray = new JSONArray();
+            for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                JSONObject myJsonObject = new JSONObject();
+                myJsonObject.put("key", postSnapshot.getKey());
+                myJsonObject.put("value", postSnapshot.getValue());
+                jsonArray.put(myJsonObject);
+            }
+            value = jsonArray;
+            data.put("children", jsonArray);
         } catch (JSONException e) {}
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, data);
