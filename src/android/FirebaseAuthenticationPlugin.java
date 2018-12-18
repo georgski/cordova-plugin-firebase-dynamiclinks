@@ -251,7 +251,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             if (user != null) {
                 pluginResult = new PluginResult(PluginResult.Status.OK, getProfileData(user));
             } else {
-                pluginResult = new PluginResult(PluginResult.Status.OK);
+                pluginResult = new PluginResult(PluginResult.Status.OK, false);
             }
 
             pluginResult.setKeepCallback(true);
