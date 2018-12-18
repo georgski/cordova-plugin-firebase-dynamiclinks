@@ -98,12 +98,12 @@ module.exports = {
     },
     deleteCurrentAnonymousUser: function() {
         return new Promise(function(resolve, reject) {
-            exec(resolve, reject, PLUGIN_NAME, "deleteCurrentAnonymousUser", [null]);
+            exec(resolve, reject, PLUGIN_NAME, "deleteCurrentAnonymousUser", []);
         });
     },
     currentUser: function() {
         return new Promise(function(resolve, reject) {
-            exec(resolve, reject, PLUGIN_NAME, "currentUser", [null]);
+            exec(resolve, reject, PLUGIN_NAME, "currentUser", []);
         });
     },
     reauthenticateWithCredential: function(email, password) {
