@@ -26,6 +26,9 @@ DbSnapshot.prototype = {
     },
     forEach: function(callback) {
         return this.asCollection.forEach(callback)
+    },
+    exists: function() {
+        return !!this._data.value;
     }
 };
 
