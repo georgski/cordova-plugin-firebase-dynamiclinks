@@ -263,6 +263,8 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
         JSONObject result = new JSONObject();
 
         try {
+            // Fixes https://stackoverflow.com/questions/42881700/firebaseuser-isanonymous-always-returns-false-after-profile-update-firebase-1
+            Boolean isAnonymous = user.isAnonymous() || user.getProviders().size() == 0;
             result.put("uid", user.getUid());
             result.put("displayName", user.getDisplayName());
             result.put("email", user.getEmail());
@@ -270,7 +272,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             result.put("photoURL", user.getPhotoUrl());
             result.put("providerId", user.getProviderId());
             result.put("providerData", new JSONArray(user.getProviders()));
-            result.put("isAnonymous", user.isAnonymous());
+            result.put("isAnonymous", isAnonymous);
         } catch (JSONException e) {
             Log.e(TAG, "Fail to process getProfileData", e);
         }
@@ -338,7 +340,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
         if (user != null) {
             callbackContext.success(getProfileData(user));
         } else {
-            callbackContext.success();
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
         }
     }
 
