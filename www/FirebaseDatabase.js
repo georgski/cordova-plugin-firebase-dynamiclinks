@@ -19,6 +19,9 @@ function DbSnapshot(ref, data) {
 
 DbSnapshot.prototype = {
     val: function() {
+        if (typeof this._data.value === 'undefined') {
+            return null
+        }
         return this._data.value;
     },
     getPriority: function() {
