@@ -34,7 +34,8 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
     private final static String EVENT_TYPE_CHILD_CHANGED = "child_changed";
     private final static String EVENT_TYPE_CHILD_REMOVED = "child_removed";
     private final static String EVENT_TYPE_CHILD_MOVED = "child_moved";
-    private final static Type settableType = new TypeToken<Map<String, Object>>() {}.getType();
+    private final static Type settableTypeMap = new TypeToken<Map<String, Object>>() {}.getType();
+    private final static Type settableTypeList = new TypeToken<List<Object>>() {}.getType();
 
     private Gson gson;
     private Map<String, Object> listeners;
@@ -204,7 +205,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
     }
 
     @CordovaMethod(ExecutionThread.WORKER)
-    private void push(String url, String path, JSONObject value, CallbackContext callbackContext) throws JSONException {
+    private void push(String url, String path, Object value, CallbackContext callbackContext) throws JSONException {
         DatabaseReference ref = getDb(url).getReference(path).push();
         String key = ref.getKey();
 
@@ -353,7 +354,9 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
         Object result = value;
 
         if (value instanceof JSONObject) {
-            result = this.gson.fromJson(value.toString(), settableType);
+            result = this.gson.fromJson(value.toString(), settableTypeMap);
+        } else if (value instanceof JSONArray) {
+            result = this.gson.fromJson(value.toString(), settableTypeList);
         }
 
         return result;
