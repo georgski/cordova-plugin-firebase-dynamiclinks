@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
 
 public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
     private final static String EVENT_TYPE_VALUE = "value";
@@ -253,7 +254,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
             for (int i = 0, n = includes.length(); i < n; ++i) {
                 JSONObject filters = includes.getJSONObject(i);
 
-                String key = filters.optString("key");
+                String key = filters.optString("key", null);
                 Object endAt = filters.opt("endAt");
                 Object startAt = filters.opt("startAt");
                 Object equalTo = filters.opt("equalTo");
@@ -275,12 +276,26 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                         query = query.endAt(endAt.toString(), key);
                     }
                 } else if (equalTo != null) {
+
                     if (equalTo instanceof Number) {
-                        query = query.equalTo((Double)equalTo, key);
+                        if (key == null) {
+                            query = query.equalTo((Double)equalTo);
+                        } else {
+                            query = query.equalTo((Double)equalTo, key);
+                        }
                     } else if (equalTo instanceof Boolean) {
-                        query = query.equalTo((Boolean)equalTo, key);
+                        if (key == null) {
+                            query = query.equalTo((Boolean)equalTo);
+                        } else {
+                            query = query.equalTo((Boolean)equalTo, key);
+                        }
                     } else {
-                        query = query.equalTo(equalTo.toString(), key);
+                        String value = equalTo.toString();
+                        if (key == null) {
+                            query = query.equalTo(value);
+                        } else {
+                            query = query.equalTo(value, key);
+                        }
                     }
                 } else {
                     throw new JSONException("includes are invalid");
@@ -326,7 +341,6 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                 myJsonObject.put("value", postSnapshot.getValue());
                 jsonArray.put(myJsonObject);
             }
-            value = jsonArray;
             data.put("children", jsonArray);
         } catch (JSONException e) {}
 
