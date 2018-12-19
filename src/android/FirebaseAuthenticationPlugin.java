@@ -22,6 +22,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuthException;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
@@ -259,6 +260,17 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
         }
     }
 
+    private static JSONObject getExceptionData(FirebaseAuthException exception) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("code", exception.getErrorCode());
+            result.put("message", exception.getMessage());
+        } catch (JSONException e) {
+            Log.e(TAG, "Fail to process getProfileData", e);
+        }
+        return result;
+    }
+
     private static JSONObject getProfileData(FirebaseUser user) {
         JSONObject result = new JSONObject();
 
@@ -289,7 +301,8 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 if (task.isSuccessful()) {
                     callbackContext.success();
                 } else {
-                    callbackContext.error(task.getException().getMessage());
+                    FirebaseAuthException e = (FirebaseAuthException)task.getException();
+                    callbackContext.error(getExceptionData(e));
                 }
             }
         });
@@ -304,7 +317,8 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 if (task.isSuccessful()) {
                     callbackContext.success();
                 } else {
-                    callbackContext.error(task.getException().getMessage());
+                    FirebaseAuthException e = (FirebaseAuthException)task.getException();
+                    callbackContext.error(getExceptionData(e));
                 }
             }
         });

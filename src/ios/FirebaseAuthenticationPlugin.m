@@ -243,7 +243,10 @@ static FIRUser* anonymousUser;
     [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
         CDVPluginResult *pluginResult;
         if (error) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
+                    @"code": @(error.code),
+                    @"message": error.localizedDescription
+            }];
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         }
@@ -259,7 +262,10 @@ static FIRUser* anonymousUser;
         dispatch_async(dispatch_get_main_queue(), ^{
             CDVPluginResult *pluginResult;
             if (error) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: [NSString stringWithFormat:@"%@:%@", @(error.code), error.localizedDescription]];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
+                        @"code": @(error.code),
+                        @"message": error.localizedDescription
+                }];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             }
