@@ -92,7 +92,7 @@ DbQuery.prototype = {
             if (errorCallback) {
                 errorCallback(error)
             }
-            return error
+            throw error
         })
     },
     off: function(eventType, callback) {
