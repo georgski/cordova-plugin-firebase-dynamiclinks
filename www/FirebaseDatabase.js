@@ -73,15 +73,24 @@ DbQuery.prototype = {
 
         return callback;
     },
-    once: function(eventType) {
+    once: function(eventType, successCallback, errorCallback) {
         var ref = this.ref;
         var args = [ref._url, ref._path,
             eventType, this._orderBy, this._includes, this._limit, ""];
         return new Promise(function(resolve, reject) {
             exec(resolve, reject, PLUGIN_NAME, "on", args);
         }).then(function(data) {
-            return new DbSnapshot(ref, data);
-        });
+            var snapshot = new DbSnapshot(ref, data);
+            if (successCallback) {
+                successCallback(snapshot)
+            }
+            return snapshot
+        }).catch(function (error) {
+            if (errorCallback) {
+                errorCallback(error)
+            }
+            return error
+        })
     },
     off: function(eventType, callback) {
         var ref = this.ref;
@@ -120,7 +129,7 @@ DbRef.prototype.child = function(path) {
 };
 
 DbRef.prototype.remove = function() {
-    var args = [this._url, this._path];
+    var args = [this._url, this._path, null, null];
     return new Promise(function(resolve, reject) {
         exec(resolve, reject, PLUGIN_NAME, "set", args);
     });
