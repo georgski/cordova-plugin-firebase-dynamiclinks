@@ -85,24 +85,35 @@
     NSString *path = [command argumentAtIndex:1];
     id value = [command argumentAtIndex:2];
     FIRDatabaseReference *ref = [database referenceWithPath:path];
+    FIRDatabaseReference *childRef = [ref childByAutoId];
 
-    [[ref childByAutoId] setValue:value withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+    if (!value) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            CDVPluginResult *pluginResult;
-            if (error) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
-                        @"code": @(error.code),
-                        @"message": error.description
-                }];
-            } else {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
-                    @"key": [ref key],
-                    @"path": [NSString stringWithFormat:@"%@/%@", path, [ref key]]
-                }];
-            }
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                @"key": [childRef key],
+                @"path": [NSString stringWithFormat:@"%@/%@", path, [childRef key]]
+            }];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         });
-    }];
+    } else {
+        [childRef setValue:value withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                CDVPluginResult *pluginResult;
+                if (error) {
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
+                            @"code": @(error.code),
+                            @"message": error.description
+                    }];
+                } else {
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
+                        @"key": [ref key],
+                        @"path": [NSString stringWithFormat:@"%@/%@", path, [ref key]]
+                    }];
+                }
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            });
+        }];
+    }
 }
 
 - (void)on:(CDVInvokedUrlCommand *)command {
