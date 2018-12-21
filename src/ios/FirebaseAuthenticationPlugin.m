@@ -94,7 +94,6 @@ static FIRUser* anonymousUser;
 
 - (void)signInAnonymously:(CDVInvokedUrlCommand *)command {
     [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *result, NSError *error) {
-        anonymousUser = result.user;
         [self.commandDelegate sendPluginResult:[self createAuthResult:result
                                                             withError:error] callbackId:command.callbackId];
     }];
@@ -227,6 +226,9 @@ static FIRUser* anonymousUser;
         dispatch_async(dispatch_get_main_queue(), ^{
             CDVPluginResult *pluginResult;
             if (user) {
+                if (user.isAnonymous) {
+                    anonymousUser = user;
+                }
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:user]];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
