@@ -30,6 +30,8 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -361,6 +363,10 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
 
     @CordovaMethod
     private void deleteCurrentAnonymousUser(CallbackContext callbackContext) {
+        // Not implemented
+        // Firebase Android SDK doesn't seem to allow to delete user that is no longer signed in
+        callbackContext.success();
+        /*
         anonymousUser.delete().addOnCompleteListener(cordova.getActivity(), new OnCompleteListener<Void>() {
             @Override
             public void onComplete(Task<Void> task) {
@@ -371,6 +377,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 }
             }
         });
+        */
     }
 
     @CordovaMethod
