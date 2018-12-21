@@ -41,11 +41,15 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
     private Map<String, Object> listeners;
     private boolean isDestroyed = false;
 
+    private static final String TAG = "FirebaseDatabase";
+
     @Override
-    protected void pluginInitialize() {
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        Log.d(TAG, "Starting Firebase Database plugin");
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         this.gson = new Gson();
         this.listeners = new HashMap<String, Object>();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
     @Override

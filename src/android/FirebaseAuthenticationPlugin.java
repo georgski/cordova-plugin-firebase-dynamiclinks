@@ -44,7 +44,8 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
     private FirebaseUser anonymousUser;
 
     @Override
-    protected void pluginInitialize() {
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
         Log.d(TAG, "Starting Firebase Authentication plugin");
 
         this.firebaseAuth = FirebaseAuth.getInstance();
