@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import android.util.Log;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
 
 public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
     private final static String EVENT_TYPE_VALUE = "value";
