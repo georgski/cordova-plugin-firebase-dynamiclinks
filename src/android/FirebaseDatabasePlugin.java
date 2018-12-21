@@ -357,6 +357,8 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
             result = this.gson.fromJson(value.toString(), settableTypeMap);
         } else if (value instanceof JSONArray) {
             result = this.gson.fromJson(value.toString(), settableTypeList);
+        } else if (value == JSONObject.NULL) {
+            result = null;
         }
 
         return result;
