@@ -66,8 +66,8 @@ DbQuery.prototype = {
     on: function(eventType, success, error) {
         var ref = this.ref;
         var callback = function(data) {
-                success(new DbSnapshot(ref, data));
-            };
+            success && success(new DbSnapshot(ref, data));
+        };
 
         callback._id = utils.createUUID();
 
@@ -120,7 +120,7 @@ function DbRef(path, url, key) {
     this.ref = this;
     this._path = path || "/";
     this._url = url || "";
-    this.key = key || "";
+    this.key = key || (path && path.split("/").pop()) || "";
 }
 
 DbRef.prototype = new DbQuery();

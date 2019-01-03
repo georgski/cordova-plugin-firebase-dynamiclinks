@@ -239,7 +239,8 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             if (task.isSuccessful()) {
                 this.signinCallback.success(getProfileData(firebaseAuth.getCurrentUser()));
             } else {
-                this.signinCallback.error(task.getException().getMessage());
+                FirebaseAuthException e = (FirebaseAuthException)task.getException();
+                this.signinCallback.error(getExceptionData(e));
             }
 
             this.signinCallback = null;
