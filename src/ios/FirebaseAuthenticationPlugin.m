@@ -214,7 +214,10 @@ static FIRUser* anonymousUser;
 - (CDVPluginResult*) createAuthResult:(FIRAuthDataResult*)result withError:(NSError*)error {
     CDVPluginResult *pluginResult;
     if (error) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
+          @"code": @(error.code),
+          @"message": error.localizedDescription
+        }];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userToDictionary:result.user]];
     }
@@ -245,10 +248,7 @@ static FIRUser* anonymousUser;
     [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
         CDVPluginResult *pluginResult;
         if (error) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
-                    @"code": @(error.code),
-                    @"message": error.localizedDescription
-            }];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self exceptionToDictionary:error]];
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         }
@@ -264,10 +264,7 @@ static FIRUser* anonymousUser;
         dispatch_async(dispatch_get_main_queue(), ^{
             CDVPluginResult *pluginResult;
             if (error) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
-                        @"code": @(error.code),
-                        @"message": error.localizedDescription
-                }];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self exceptionToDictionary:error]];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             }
@@ -297,7 +294,7 @@ static FIRUser* anonymousUser;
 //        dispatch_async(dispatch_get_main_queue(), ^{
             CDVPluginResult *pluginResult;
             if (error) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self exceptionToDictionary:error]];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             }
@@ -326,7 +323,7 @@ static FIRUser* anonymousUser;
     [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
         CDVPluginResult *pluginResult;
         if (error) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[self exceptionToDictionary:error]];
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         }
@@ -346,6 +343,13 @@ static FIRUser* anonymousUser;
         @"providerData": (providerData == nil || [providerData count] == 0) ? @[] : @[providerData[0].providerID],
         @"isAnonymous": user.isAnonymous ? @YES : @NO
     };
+}
+
+- (NSDictionary*)exceptionToDictionary:(NSError *)error {
+    return @{
+         @"code": @(error.code),
+         @"message": error.localizedDescription
+     };
 }
 
 @end

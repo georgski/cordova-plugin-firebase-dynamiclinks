@@ -152,11 +152,20 @@
         });
     };
 
+    id errorHandler = ^(NSError * _Nonnull error) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{
+          @"code": @(error.code),
+          @"message": error.description
+        }];
+        [pluginResult setKeepCallbackAsBool:keepCallback];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    };
+    
     if (keepCallback) {
-        FIRDatabaseHandle handle = [query observeEventType:type withBlock:handler];
+        FIRDatabaseHandle handle = [query observeEventType:type withBlock:handler withCancelBlock:errorHandler];
         [self.listeners setObject:@(handle) forKey:uid];
     } else {
-        [query observeSingleEventOfType:type withBlock:handler];
+        [query observeSingleEventOfType:type withBlock:handler withCancelBlock:errorHandler];
     }
 }
 

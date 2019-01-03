@@ -59,6 +59,24 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
         this.isDestroyed = true;
     }
 
+    private JSONObject getErrorJsonObject(DatabaseError error) {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("code", error.getCode());
+            data.put("message", error.getMessage());
+        } catch (JSONException e) {}
+        return data;
+    }
+
+    private JSONObject getRefJsonObject(String path, String key) {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("key", key);
+            data.put("path", path + "/" + key);
+        } catch (JSONException e) {}
+        return data;
+    }
+
     @CordovaMethod(ExecutionThread.WORKER)
     private void on(String url, String path, String type, JSONObject orderBy, JSONArray includes, JSONObject limit, String uid, CallbackContext callbackContext) throws JSONException {
         final Query query = createQuery(url, path, orderBy, includes, limit);
@@ -80,7 +98,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                     if (isDestroyed) {
                         query.removeEventListener(this);
                     } else {
-                        callbackContext.error(databaseError.getCode());
+                        callbackContext.error(getErrorJsonObject(databaseError));
                     }
                 }
             };
@@ -134,7 +152,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                     if (isDestroyed) {
                         query.removeEventListener(this);
                     } else {
-                        callbackContext.error(databaseError.getCode());
+                        callbackContext.error(getErrorJsonObject(databaseError));
                     }
                 }
             };
@@ -164,7 +182,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
             @Override
             public void onComplete(DatabaseError error, DatabaseReference ref) {
                 if (error != null) {
-                    callbackContext.error(error.getCode());
+                    callbackContext.error(getErrorJsonObject(error));
                 } else {
                     callbackContext.success();
                 }
@@ -193,21 +211,12 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
             @Override
             public void onComplete(DatabaseError error, DatabaseReference ref) {
                 if (error != null) {
-                    callbackContext.error(error.getCode());
+                    callbackContext.error(getErrorJsonObject(error));
                 } else {
                     callbackContext.success();
                 }
             }
         });
-    }
-
-    private JSONObject getRefJsonObject(String path, String key) {
-        JSONObject data = new JSONObject();
-        try {
-            data.put("key", key);
-            data.put("path", path + "/" + key);
-        } catch (JSONException e) {}
-        return data;
     }
 
     @CordovaMethod(ExecutionThread.WORKER)
@@ -222,7 +231,7 @@ public class FirebaseDatabasePlugin extends ReflectiveCordovaPlugin {
                 @Override
                 public void onComplete(DatabaseError error, DatabaseReference ref) {
                     if (error != null) {
-                        callbackContext.error(error.getCode());
+                        callbackContext.error(getErrorJsonObject(error));
                     } else {
                         callbackContext.success(getRefJsonObject(path, key));
                     }
