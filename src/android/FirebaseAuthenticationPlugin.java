@@ -239,8 +239,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
             if (task.isSuccessful()) {
                 this.signinCallback.success(getProfileData(firebaseAuth.getCurrentUser()));
             } else {
-                FirebaseAuthException e = (FirebaseAuthException)task.getException();
-                this.signinCallback.error(getExceptionData(e));
+                this.signinCallback.error(getTaskExceptionData(task));
             }
 
             this.signinCallback = null;
@@ -264,13 +263,17 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
         }
     }
 
-    private static JSONObject getExceptionData(FirebaseAuthException exception) {
+    private static JSONObject getTaskExceptionData(Task task) {
+        Exception exception = task.getException();
         JSONObject result = new JSONObject();
         try {
-            result.put("code", exception.getErrorCode());
             result.put("message", exception.getMessage());
+            if (exception instanceof FirebaseAuthException) {
+                FirebaseAuthException firebaseAuthException = (FirebaseAuthException)task.getException();
+                result.put("code", firebaseAuthException.getErrorCode());
+            }
         } catch (JSONException e) {
-            Log.e(TAG, "Fail to process getProfileData", e);
+            Log.e(TAG, "Unhandler error in getTaskExceptionData", e);
         }
         return result;
     }
@@ -305,8 +308,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 if (task.isSuccessful()) {
                     callbackContext.success();
                 } else {
-                    FirebaseAuthException e = (FirebaseAuthException)task.getException();
-                    callbackContext.error(getExceptionData(e));
+                    callbackContext.error(getTaskExceptionData(task));
                 }
             }
         });
@@ -321,8 +323,7 @@ public class FirebaseAuthenticationPlugin extends ReflectiveCordovaPlugin implem
                 if (task.isSuccessful()) {
                     callbackContext.success();
                 } else {
-                    FirebaseAuthException e = (FirebaseAuthException)task.getException();
-                    callbackContext.error(getExceptionData(e));
+                    callbackContext.error(getTaskExceptionData(task));
                 }
             }
         });
